@@ -3,13 +3,13 @@
 This file implements the pendulum system with two muscles attached
 
 """
-
+import math
 from math import sqrt
-
 import cmc_pylog as pylog
 import numpy as np
 from matplotlib import pyplot as plt
-
+import scipy
+from scipy import signal
 from cmcpack import DEFAULT
 from cmcpack.plot import save_figure
 from muscle import Muscle
@@ -91,11 +91,11 @@ def exercise2():
     sys.add_muscle_system(muscles)  # Add the muscle model to the system
 
     ##### Time #####
-    t_max = 2.5  # Maximum simulation time
+    t_max = 10  # Maximum simulation time
     time = np.arange(0., t_max, 0.001)  # Time vector
 
     ##### Model Initial Conditions #####
-    x0_P = np.array([np.pi/4, 0.])  # Pendulum initial condition
+    x0_P = np.array([0., 0.])  # Pendulum initial condition
 
     # Muscle Model initial condition
     x0_M = np.array([0., M1.L_OPT, 0., M2.L_OPT])
@@ -112,11 +112,39 @@ def exercise2():
     # Add muscle activations to the simulation
     # Here you can define your muscle activation vectors
     # that are time dependent
+        
+    act1 = np.ones((len(time), 1))*1
+    act2 = np.ones((len(time), 1))*1
+    
+    actcos = np.ones((len(time), 1))*1
+    actcos2 = np.ones((len(time), 1))*1
+    
+    actsquare = np.ones((len(time), 1))*1
+    actsquare2 = np.ones((len(time), 1))*1
+    
+    w=0.05
+    amplitude=1
+                
+    for i in range(len(actcos)):
+        
+        if math.sin(w*i)<=0:
+            actcos[i]=0
+            actcos2[i]=amplitude*math.sqrt(2)*math.cos(w*i)
+        else:
+            actcos[i]=amplitude*math.sqrt(2)*math.cos(w*i)
+            actcos2[i]=0
+            
+    for i in range(len(actsquare)):
+        
+        if i%(2*math.pi/w)<=math.pi/w:
+            actsquare[i]=amplitude
+            actsquare2[i]=0
+        else:
+            actsquare[i]=0
+            actsquare2[i]=amplitude
+    
 
-    act1 = np.ones((len(time), 1)) * 1.
-    act2 = np.ones((len(time), 1)) * 0.05
-
-    activations = np.hstack((act1, act2))
+    activations = np.hstack((actsquare, actsquare2))
 
     # Method to add the muscle activations to the simulation
 
