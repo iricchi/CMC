@@ -91,7 +91,7 @@ def exercise2():
     sys.add_muscle_system(muscles)  # Add the muscle model to the system
 
     ##### Time #####
-    t_max = 10  # Maximum simulation time
+    t_max = 5  # Maximum simulation time
     time = np.arange(0., t_max, 0.001)  # Time vector
 
     ##### Model Initial Conditions #####
@@ -107,8 +107,8 @@ def exercise2():
     # SystemSimulation is used to initialize the system and integrate
     # over time
 
-    sim = SystemSimulation(sys)  # Instantiate Simulation object
-
+    simsin = SystemSimulation(sys)  # Instantiate Simulation object
+    simsquare = SystemSimulation(sys)
     # Add muscle activations to the simulation
     # Here you can define your muscle activation vectors
     # that are time dependent
@@ -116,23 +116,22 @@ def exercise2():
     act1 = np.ones((len(time), 1))*1
     act2 = np.ones((len(time), 1))*1
     
-    actcos = np.ones((len(time), 1))*1
-    actcos2 = np.ones((len(time), 1))*1
+    actsin = np.ones((len(time), 1))*1
+    actsin2 = np.ones((len(time), 1))*1
     
     actsquare = np.ones((len(time), 1))*1
     actsquare2 = np.ones((len(time), 1))*1
     
-    w=0.05
+    w=0.1
     amplitude=1
                 
-    for i in range(len(actcos)):
-        
+    for i in range(len(actsin)):  
         if math.sin(w*i)<=0:
-            actcos[i]=0
-            actcos2[i]=amplitude*math.sqrt(2)*math.cos(w*i)
+            actsin[i]=0
+            actsin2[i]=amplitude*math.sqrt(2)*math.sin(w*i)
         else:
-            actcos[i]=amplitude*math.sqrt(2)*math.cos(w*i)
-            actcos2[i]=0
+            actsin[i]=amplitude*math.sqrt(2)*math.sin(w*i)
+            actsin2[i]=0
             
     for i in range(len(actsquare)):
         
@@ -144,52 +143,58 @@ def exercise2():
             actsquare2[i]=amplitude
     
 
-    activations = np.hstack((actsquare, actsquare2))
+    activationssin = np.hstack((actsin, actsin2))
+    activationssquare = np.hstack((actsquare, actsquare2))
 
     # Method to add the muscle activations to the simulation
 
-    sim.add_muscle_activations(activations)
-
+    simsin.add_muscle_activations(activationssin)
+    simsquare.add_muscle_activations(activationssquare)
     # Simulate the system for given time
 
-    sim.initalize_system(x0, time)  # Initialize the system state
-
+    simsin.initalize_system(x0, time)  # Initialize the system state
+    simsquare.initalize_system(x0, time)
     #: If you would like to perturb the pedulum model then you could do
     # so by
-    sim.sys.pendulum_sys.parameters.PERTURBATION = True
+    simsin.sys.pendulum_sys.parameters.PERTURBATION = True
+    simsquare.sys.pendulum_sys.parameters.PERTURBATION = True
     # The above line sets the state of the pendulum model to zeros between
     # time interval 1.2 < t < 1.25. You can change this and the type of
     # perturbation in
     # pendulum_system.py::pendulum_system function
 
     # Integrate the system for the above initialized state and time
-    sim.simulate()
-
+    simsin.simulate()
+    simsquare.simulate()
     # Obtain the states of the system after integration
     # res is np.array [time, states]
     # states vector is in the same order as x0
-    res = sim.results()
+    ressin = simsin.results()
+    ressquare = simsquare.results()
 
     # In order to obtain internal states of the muscle
     # you can access the results attribute in the muscle class
-    muscle1_results = sim.sys.muscle_sys.Muscle1.results
-    muscle2_results = sim.sys.muscle_sys.Muscle2.results
+    muscle1_results = simsin.sys.muscle_sys.Muscle1.results
+    muscle2_results = simsin.sys.muscle_sys.Muscle2.results
 
     # Plotting the results
     plt.figure('Pendulum')
     plt.title('Pendulum Phase')
-    plt.plot(res[:, 1], res[:, 2])
+    plt.plot(ressin[:, 1], ressin[:, 2])
+    plt.plot(ressquare[:, 1], ressquare[:, 2])
     plt.xlabel('Position [rad]')
     plt.ylabel('Velocity [rad.s]')
     plt.grid()
 
     # To animate the model, use the SystemAnimation class
     # Pass the res(states) and systems you wish to animate
-    simulation = SystemAnimation(res, pendulum, muscles)
+    simulationsin = SystemAnimation(ressin, pendulum, muscles)
+    #simulationsquare = SystemAnimation(ressquare, pendulum, muscles)
+    
     # To start the animation
     if DEFAULT["save_figures"] is False:
-        simulation.animate()
-
+        simulationsin.animate()
+        simulationsquare.animate()
     if not DEFAULT["save_figures"]:
         plt.show()
     else:
