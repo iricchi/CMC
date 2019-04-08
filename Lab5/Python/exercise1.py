@@ -386,10 +386,13 @@ def exercise1d():
     # Plot velocity versus tension
     plt.figure()
     plt.plot(V_ce_1d,PF_ce_1d+AF_ce_1d)
+    plt.plot(V_ce_1d, PF_ce_1d)
+    plt.plot(V_ce_1d, AF_ce_1d, '--')
     plt.title('Isotonic muscle experiment')
     plt.xlabel('Contractile element velocity')
     plt.ylabel('Total Force')
     plt.grid()
+    plt.legend(['total','passive', 'active'])
     plt.axvline(0, color='r', linestyle='--')
     
     
