@@ -5,7 +5,7 @@ by a neural network
 
 import numpy as np
 from matplotlib import pyplot as plt
-
+import math
 import cmc_pylog as pylog
 from cmcpack import DEFAULT
 from cmcpack.plot import save_figure
@@ -80,9 +80,19 @@ def exercise3():
     ##### Neural Network #####
     # The network consists of four neurons
     N_params = NetworkParameters()  # Instantiate default network parameters
-    N_params.D = 2.  # To change a network parameter
+    #N_params.D = 2.  # To change a network parameter
+    N_params.D = 2.
     # Similarly to change w -> N_params.w = (4x4) array
-
+#    N_params.w=[[0.,-5.,5.,-5.],
+#                [-5.,0.,-5.,5.],
+#                [-5.,0.,0.,0.],
+#                [0.,-5.,0.,0.]]
+    
+    N_params.w=[[0.,-5.,-5.,0.],
+                [-5.,0.,0.,-5.],
+                [5.,-5.,0.,0.],
+                [-5.,5.,0.,0.]]
+    
     # Create a new neural network with above parameters
     neural_network = NeuralSystem(N_params)
     pylog.info('Neural system initialized \n {}'.format(
@@ -97,7 +107,7 @@ def exercise3():
     sys.add_neural_system(neural_network)
 
     ##### Time #####
-    t_max = 2.5  # Maximum simulation time
+    t_max = 7  # Maximum simulation time
     time = np.arange(0., t_max, 0.001)  # Time vector
 
     ##### Model Initial Conditions #####
@@ -145,7 +155,11 @@ def exercise3():
     # Plotting the results
     plt.figure('Pendulum')
     plt.title('Pendulum Phase')
-    plt.plot(res[:, 0], res[:, :2])
+    #plt.plot(res[:, 0], res[:, :2])
+    plt.plot(res[:, 1], res[:, 2])
+    #plt.plot(res[:, 1], res[:, 2])
+    #plt.plot(res[:, 0])
+    #plt.plot(res[:, :2])
     plt.xlabel('Position [rad]')
     plt.ylabel('Velocity [rad.s]')
     plt.grid()
