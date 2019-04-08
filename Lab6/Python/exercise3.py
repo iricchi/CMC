@@ -95,6 +95,10 @@ def exercise3():
     
     # Create a new neural network with above parameters
     neural_network = NeuralSystem(N_params)
+    
+    
+    
+    
     pylog.info('Neural system initialized \n {}'.format(
         N_params.showParameters()))
 
@@ -105,10 +109,24 @@ def exercise3():
     sys.add_muscle_system(muscles)  # Add the muscle model to the system
     # Add the neural network to the system
     sys.add_neural_system(neural_network)
+    
+    
 
     ##### Time #####
     t_max = 7  # Maximum simulation time
     time = np.arange(0., t_max, 0.001)  # Time vector
+    
+    
+    
+    
+    externalinput=np.ones((len(time), 4))
+    #PLAY WITH EXTERNAL INPOUT HERE (excitation of only 1 neuron for example)
+    
+    
+    
+
+    
+    
 
     ##### Model Initial Conditions #####
     x0_P = np.array([0., 0.])  # Pendulum initial condition
@@ -126,10 +144,11 @@ def exercise3():
     # over time
 
     sim = SystemSimulation(sys)  # Instantiate Simulation object
-
+    
+    
     # Add external inputs to neural network
-
-    # sim.add_external_inputs_to_network(np.ones((len(time), 4)))
+    #sim.add_external_inputs_to_network(externalinput)
+    sim.add_external_inputs_to_network(externalinput)
     # sim.add_external_inputs_to_network(ext_in)
 
     sim.initalize_system(x0, time)  # Initialize the system state
