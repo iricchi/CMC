@@ -1,7 +1,7 @@
 """ Pendulum """
 
 import numpy as np
-
+import math
 import cmc_pylog as pylog
 from system_parameters import PendulumParameters
 
@@ -67,7 +67,8 @@ class PendulumSystem(object):
         if self.parameters.PERTURBATION is True:
             if 1.2 < time < 1.25:
                 pylog.warning('Perturbing the pendulum')
-                theta = 0.0
+                #theta = math.pi/8
+                torque= 50
 
         return np.array([
             [dtheta],

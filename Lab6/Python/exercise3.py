@@ -81,7 +81,7 @@ def exercise3():
     # The network consists of four neurons
     N_params = NetworkParameters()  # Instantiate default network parameters
     #N_params.D = 2.  # To change a network parameter
-    N_params.D = 2.
+    N_params.D = 1.
     # Similarly to change w -> N_params.w = (4x4) array
 #    N_params.w=[[0.,-5.,5.,-5.],
 #                [-5.,0.,-5.,5.],
@@ -122,9 +122,10 @@ def exercise3():
     externalinput=np.ones((len(time), 4))
     #PLAY WITH EXTERNAL INPOUT HERE (excitation of only 1 neuron for example)
     
-    
-    
-
+    externalinput[1,:]=1.*externalinput[1,:]
+    externalinput[2,:]=0.1*externalinput[2,:]
+    externalinput[3,:]=0.1*externalinput[3,:]
+    externalinput[4,:]=1.*externalinput[4,:]
     
     
 
@@ -148,7 +149,9 @@ def exercise3():
     
     # Add external inputs to neural network
     #sim.add_external_inputs_to_network(externalinput)
+    
     sim.add_external_inputs_to_network(externalinput)
+    
     # sim.add_external_inputs_to_network(ext_in)
 
     sim.initalize_system(x0, time)  # Initialize the system state
@@ -164,12 +167,26 @@ def exercise3():
     # Obtain the states of the system after integration
     # res is np.array [time, states]
     # states vector is in the same order as x0
-    res = sim.results()
-
+    #res = sim.results()
+    
     # In order to obtain internal states of the muscle
     # you can access the results attribute in the muscle class
     muscle1_results = sim.sys.muscle_sys.Muscle1.results
     muscle2_results = sim.sys.muscle_sys.Muscle2.results
+    
+    
+    #print (np.size(muscle1_results))
+    #plt.figure('activation')
+    #plt.plot(muscle1_results)
+    #☻plt.plot(muscle2_results)
+
+    plt.figure('output neural network')
+    plt.title('output of the neural network')
+    #plt.plot(res[:, 0], res[:, :2])
+    plt.plot(res[:, 0], res[:, -1])
+    plt.plot(res[:, 0], res[:, -2])
+    
+    
 
     # Plotting the results
     plt.figure('Pendulum')
