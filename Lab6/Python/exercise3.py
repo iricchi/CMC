@@ -1,6 +1,24 @@
 """ Lab 6 Exercise 3
 This file implements the pendulum system with two muscles attached driven
 by a neural network
+
+To obtain figure 15, 
+
+
+
+"""
+
+""" 
+-------------------------------------------------------------------------------------------------------
+HOW TO OBTAIN THE FIGURES IN THE REPORT
+-------------------------------------------------------------------------------------------------------
+To obtain figures 13 and 14, just run the code
+To obtain figure 15, run the code a first time, then without closing the plot, 
+change the 0. by 1. in the lines 134 to 137 and run it again.
+
+To obtain figure 16, change the 0. in the previous lines by 0.2, 0., 0.2, 0.
+
+To obtain Figure 17, change the 0.2 by 0.7 in the previous instruction
 """
 
 import numpy as np
@@ -83,21 +101,15 @@ def exercise3():
     #N_params.D = 2.  # To change a network parameter
     N_params.D = 1.
     # Similarly to change w -> N_params.w = (4x4) array
-#    N_params.w=[[0.,-5.,5.,-5.],
-#                [-5.,0.,-5.,5.],
-#                [-5.,0.,0.,0.],
-#                [0.,-5.,0.,0.]]
     
     N_params.w=[[0.,-5.,-5.,0.],
                 [-5.,0.,0.,-5.],
                 [5.,-5.,0.,0.],
                 [-5.,5.,0.,0.]]
     
+    
     # Create a new neural network with above parameters
     neural_network = NeuralSystem(N_params)
-    
-    
-    
     
     pylog.info('Neural system initialized \n {}'.format(
         N_params.showParameters()))
@@ -113,7 +125,7 @@ def exercise3():
     
 
     ##### Time #####
-    t_max = 7  # Maximum simulation time
+    t_max = 10  # Maximum simulation time
     time = np.arange(0., t_max, 0.001)  # Time vector
     
     
@@ -121,11 +133,11 @@ def exercise3():
     
     externalinput=np.ones((len(time), 4))
     #PLAY WITH EXTERNAL INPOUT HERE (excitation of only 1 neuron for example)
-    
-    externalinput[1,:]=1.*externalinput[1,:]
-    externalinput[2,:]=0.1*externalinput[2,:]
-    externalinput[3,:]=0.1*externalinput[3,:]
-    externalinput[4,:]=1.*externalinput[4,:]
+
+    externalinput[:, 0]=0.*externalinput[:,0]
+    externalinput[:, 1]=0.*externalinput[:,1]
+    externalinput[:, 2]=0.*externalinput[:,2]
+    externalinput[:, 3]=0.*externalinput[:,3]
     
     
 
@@ -149,6 +161,7 @@ def exercise3():
     
     # Add external inputs to neural network
     #sim.add_external_inputs_to_network(externalinput)
+    #-------------------------------------------------------------------------
     
     sim.add_external_inputs_to_network(externalinput)
     
@@ -185,7 +198,9 @@ def exercise3():
     #plt.plot(res[:, 0], res[:, :2])
     plt.plot(res[:, 0], res[:, -1])
     plt.plot(res[:, 0], res[:, -2])
-    
+    plt.xlabel('time (s)')
+    plt.ylabel('amplitude (.)')
+    #plt.legend(['external input=0.0','external input=1.0'])
     
 
     # Plotting the results

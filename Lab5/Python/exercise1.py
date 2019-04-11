@@ -332,7 +332,7 @@ def exercise1d():
     PF_ce_1d=np.zeros(100)
     AF_ce_1d=np.zeros(100)
     # Create load vector
-    Load=np.linspace(0.1,400,num=100)
+    Load=np.linspace(0.1,800,num=100)
     
     
     """1.d) velocity-tension analysis """
