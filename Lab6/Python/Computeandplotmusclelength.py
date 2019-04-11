@@ -72,7 +72,7 @@ plt.xlabel('Theta [rad]')
 plt.ylabel('Moment arm [m]')
 
 plt.legend(['Muscle 1', 'Muscle 2'])
-plt.title('Moment with respect to angle theta')
+plt.title('Moment arm with respect to angle theta')
 
 
 
@@ -131,4 +131,4 @@ plt.xlabel('Theta [rad]')
 plt.ylabel('Moment arm [m]')
 
 plt.legend(['Muscle 1', 'Muscle 2'])
-plt.title('Moment')
+plt.title('Moment arm')
