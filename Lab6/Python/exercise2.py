@@ -1,6 +1,18 @@
 """ Lab 6 Exercise 2
-
 This file implements the pendulum system with two muscles attached
+"""
+""" 
+-------------------------------------------------------------------------------------------------------
+                              HOW TO OBTAIN THE FIGURES IN THE REPORT
+-------------------------------------------------------------------------------------------------------
+ 
+To obtain the plots of Figure4, Figure 5 and Figure6 in the report, 
+run "Computeandplotmusclelength".
+
+To see the activation waves (figure 7), uncomment lines 180-186
+To obtain the figure 11, just run the code as it is, or change the activation between square and sin.
+
+To obtain the figures 8, 9 and 10, modify lines 191 to modify the activation, and 206 to put or not a perturbation
 
 """
 import math
@@ -22,7 +34,6 @@ from system_parameters import (MuscleParameters, NetworkParameters,
                                PendulumParameters)
 from system_simulation import SystemSimulation
 
-
 # Global settings for plotting
 # You may change as per your requirement
 plt.rc('lines', linewidth=2.0)
@@ -31,7 +42,6 @@ plt.rc('axes', titlesize=14.0)     # fontsize of the axes title
 plt.rc('axes', labelsize=14.0)     # fontsize of the x and y labels
 plt.rc('xtick', labelsize=14.0)    # fontsize of the tick labels
 plt.rc('ytick', labelsize=14.0)    # fontsize of the tick labels
-
 DEFAULT["save_figures"] = True
 
 
@@ -116,81 +126,105 @@ def exercise2():
     # that are time dependent
         
     label_test=[]
-    act1 = np.ones((len(time), 1))*1
-    act2 = np.ones((len(time), 1))*1
     
-    actsin = np.ones((len(time), 1))*1
-    actsin2 = np.ones((len(time), 1))*1
     
-    actsquare = np.ones((len(time), 1))*1
-    actsquare2 = np.ones((len(time), 1))*1
+    """" definition of different kinds of activation for each muscle.
+    Amplitude1 and amplitude2 allows to play with the amplitude of activation on each muscle (RMS value for the sinus activation)
+    
+    act1 and act2 activates the muscle all the time.
+    actsin activates with sin(wi) if sin(wi)>0 (no negative activation). The 2 muscles are in opposition of phase.
+    actsquare does the same with a square signal.
+    
+    
+    
+    """
+    
+    
+    amplitude1=1.
+    amplitude2=1.
+    
+    #declaration of the activations
+    act1 = np.ones((len(time), 1))*amplitude1
+    act2 = np.ones((len(time), 1))*amplitude2
+    actsin = np.ones((len(time), 1))
+    actsin2 = np.ones((len(time), 1))
+    actsquare = np.ones((len(time), 1))
+    actsquare2 = np.ones((len(time), 1))
     
     wlist=[0.1,0.05, 0.01, 0.005]
-    amplitude=1
+    
     k=0
+    
+    
     for w in wlist:
+        #generation of the signals at pulsation w
         for i in range(len(actsin)):  
             if math.sin(w*i)<=0:
                 actsin[i]=0
-                actsin2[i]=abs(amplitude*math.sqrt(2)*math.sin(w*i))
+                actsin2[i]=abs(amplitude2*math.sqrt(2)*math.sin(w*i))
             else:
-                actsin[i]=abs(amplitude*math.sqrt(2)*math.sin(w*i))
+                actsin[i]=abs(amplitude1*math.sqrt(2)*math.sin(w*i))
                 actsin2[i]=0
             
         for i in range(len(actsquare)):
             
             if i%(2*math.pi/w)<=math.pi/w:
-                actsquare[i]=amplitude
+                actsquare[i]=amplitude1
                 actsquare2[i]=0
             else:
                 actsquare[i]=0
-                actsquare2[i]=amplitude
-    
-#    plt.figure
-#    plt.plot(actsquare)
-#    plt.plot(actsin)
-#    plt.title("Activations wave forms used")
-#    plt.xlabel("Time (s)")
-#    plt.ylabel("Activation amplitude (.)")
-    
-    
-    
+                actsquare2[i]=amplitude2
+ 
 
+        """ uncomment this to plot the activation signals"""               
+#        #Plot of the activation through time    
+#        plt.figure
+#        plt.plot(actsquare)
+#        plt.plot(actsin)
+#        plt.title("Activations wave forms used")
+#        plt.xlabel("Time (s)")
+#        plt.ylabel("Activation amplitude (.)")
+    
+    
+    
+        """ put as parameters the activation you want (act1/2, actsin1/2 or actsquare1/2)"""
         activationssin = np.hstack((actsquare, actsquare2))
-    #activationssquare = np.hstack((actsquare, actsquare2))
+        #activationssquare = np.hstack((actsquare, actsquare2))
 
-    # Method to add the muscle activations to the simulation
+        # Method to add the muscle activations to the simulation
 
         simsin.add_muscle_activations(activationssin)
-    #simsquare.add_muscle_activations(activationssquare)
-    # Simulate the system for given time
+        #simsquare.add_muscle_activations(activationssquare)
+        # Simulate the system for given time
 
         simsin.initalize_system(x0, time)  # Initialize the system state
-    #simsquare.initalize_system(x0, time)
-    #: If you would like to perturb the pedulum model then you could do
-    # so by
+        #simsquare.initalize_system(x0, time)
+        #: If you would like to perturb the pedulum model then you could do
+        # so by
+        
+        """perturbation of the signal"""
         simsin.sys.pendulum_sys.parameters.PERTURBATION = False
-    #simsquare.sys.pendulum_sys.parameters.PERTURBATION = True
-    # The above line sets the state of the pendulum model to zeros between
-    # time interval 1.2 < t < 1.25. You can change this and the type of
-    # perturbation in
-    # pendulum_system.py::pendulum_system function
+        #simsquare.sys.pendulum_sys.parameters.PERTURBATION = True
+        # The above line sets the state of the pendulum model to zeros between
+        # time interval 1.2 < t < 1.25. You can change this and the type of
+        # perturbation in
+        # pendulum_system.py::pendulum_system function
 
-    # Integrate the system for the above initialized state and time
+        # Integrate the system for the above initialized state and time
         simsin.simulate()
-    #simsquare.simulate()
-    # Obtain the states of the system after integration
-    # res is np.array [time, states]
-    # states vector is in the same order as x0
+        #simsquare.simulate()
+        # Obtain the states of the system after integration
+        # res is np.array [time, states]
+        # states vector is in the same order as x0
         ressin = simsin.results()
-    #ressquare = simsquare.results()
+        #ressquare = simsquare.results()
 
-    # In order to obtain internal states of the muscle
-    # you can access the results attribute in the muscle class
+        # In order to obtain internal states of the muscle
+        # you can access the results attribute in the muscle class
         muscle1_results = simsin.sys.muscle_sys.Muscle1.results
         muscle2_results = simsin.sys.muscle_sys.Muscle2.results
 
-    # Plotting the results
+        # Plotting the results
         plt.figure('Pendulum')
         plt.title('Pendulum Phase')
         plt.plot(ressin[:, 1], ressin[:, 2])
@@ -202,12 +236,12 @@ def exercise2():
         plt.legend(label_test)
         plt.grid()
 
-    # To animate the model, use the SystemAnimation class
-    # Pass the res(states) and systems you wish to animate
+        # To animate the model, use the SystemAnimation class
+        # Pass the res(states) and systems you wish to animate
         simulationsin = SystemAnimation(ressin, pendulum, muscles)
-    #simulationsquare = SystemAnimation(ressquare, pendulum, muscles)
+        #simulationsquare = SystemAnimation(ressquare, pendulum, muscles)
     
-    # To start the animation
+        # To start the animation
         if DEFAULT["save_figures"] is False:
             simulationsin.animate()
         #simulationsquare.animate()
