@@ -332,7 +332,7 @@ def exercise1d():
     PF_ce_1d=np.zeros(100)
     AF_ce_1d=np.zeros(100)
     # Create load vector
-    Load=np.linspace(0.1,400,num=100)
+    Load=np.linspace(1,600,num=100)
     
     
     """1.d) velocity-tension analysis """
@@ -356,11 +356,11 @@ def exercise1d():
         #print(result.l_mtc[-1]-(sys.muscle.L_OPT+sys.muscle.L_SLACK))
         
         if (result.l_mtc[-1] < sys.muscle.L_OPT+sys.muscle.L_SLACK):
-            V_ce_1d[i]=min(result.v_ce)
+            V_ce_1d[i] = min(result.v_ce)
         
         else :
             
-            V_ce_1d[i] =max(result.v_ce)
+            V_ce_1d[i] = max(result.v_ce)
             
         PF_ce_1d[i] =result.passive_force[-1]
         AF_ce_1d[i] =result.active_force[-1]  
@@ -382,17 +382,18 @@ def exercise1d():
     plt.xlabel('Contractile element velocity')
     plt.ylabel('Load')
     plt.grid()
+    plt.axvline(0, color='r', linestyle='--')
     
     # Plot velocity versus tension
     plt.figure()
-    plt.plot(V_ce_1d,PF_ce_1d+AF_ce_1d)
-    plt.plot(V_ce_1d, PF_ce_1d)
-    plt.plot(V_ce_1d, AF_ce_1d, '--')
+    plt.plot(V_ce_1d, PF_ce_1d+AF_ce_1d)
+    #plt.plot(V_ce_1d, PF_ce_1d)
+    #plt.plot(V_ce_1d, AF_ce_1d, '--')
     plt.title('Isotonic muscle experiment')
     plt.xlabel('Contractile element velocity')
     plt.ylabel('Total Force')
     plt.grid()
-    plt.legend(['total','passive', 'active'])
+    #plt.legend(['total','passive', 'active'])
     plt.axvline(0, color='r', linestyle='--')
     
     
