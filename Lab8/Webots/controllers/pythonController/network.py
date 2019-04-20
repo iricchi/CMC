@@ -11,7 +11,7 @@ def phases_ode(time, phases, freqs, coupling_weights, phases_desired):
     d_phi = np.zeros(len(phases))
     sum = 0
     for i in range(len(phases)):
-        for j in range(range(len(phases))):
+        for j in range(len(phases)):
             sum += coupling_weights[i,j]*np.sin(phases[i]-phases[j]-phases_desired[i,j])
 
         d_phi[i]=2*np.pi*freqs+sum
