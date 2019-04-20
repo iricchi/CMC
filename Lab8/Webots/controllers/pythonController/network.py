@@ -86,8 +86,8 @@ class PhaseEquation(ODESolver):
         for i in range(2*self.n_joints):
             for j in range(1,2*self.n_joints-1):
                 if j-i == 1:
-                    self.phases_desidered[i,j] = phase_lag
-                    self.phases_desidered[j,i] = -phase_lag
+                    self.phases_desired[i,j] = phase_lag
+                    self.phases_desired[j,i] = -phase_lag
          
         
         
