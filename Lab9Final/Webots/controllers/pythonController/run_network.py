@@ -8,7 +8,7 @@ from network import SalamanderNetwork
 from save_figures import save_figures
 from parse_args import save_plots
 from simulation_parameters import SimulationParameters
-
+import plot_results
 
 def run_network(duration, update=False, drive=0):
     """Run network without Webots and plot results"""
@@ -74,7 +74,7 @@ def run_network(duration, update=False, drive=0):
 
     # Implement plots of network results
     pylog.warning("Implement plots")
-
+    plot_results.main(plot=True)
 
 def main(plot):
     """Main"""

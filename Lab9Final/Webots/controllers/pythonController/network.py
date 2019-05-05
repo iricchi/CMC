@@ -12,28 +12,38 @@ def network_ode(_time, state, parameters):
     returns derivative of state (phases and amplitudes)
 
     """
-    phases = state[:parameters.n_oscillators]
-    amplitudes = state[parameters.n_oscillators:2*parameters.n_oscillators]
+    phases = np.array(state[:parameters.n_oscillators])
+    amplitudes = np.array(state[parameters.n_oscillators:2*parameters.n_oscillators])
     
     dphase = np.zeros(parameters.n_oscillators)
     sum = 0
     for i in range(parameters.n_oscillators):
         for j in range(parameters.n_oscillators):
-            sum += parameters.coupling_weights[i,j]*np.sin(phases[i]-phases[j]-parameters.phase_bias[i,j])
+        #Amplitude?????
+            sum += parameters.coupling_weights[i,j]*amplitudes[i]*np.sin(phases[j]-phases[i]-parameters.phase_bias[i,j])
 
         dphase[i]=2*np.pi*parameters.freqs[i]+sum
   
-    damplitude = parameters.rates*(amplitudes-parameters.nominal_amplitudes)
+   
+  
+
+    damplitude = parameters.rates[:,0]*((parameters.nominal_amplitudes-amplitudes))
     
-    return np.concatenate([dphase, damplitude])
+
+    #print(damplitude)
+    return np.concatenate((dphase, damplitude), axis=None)
+
 
 
 def motor_output(phases, amplitudes,parameters):
     """Motor output"""
-    dq = amplitudes[:parameters.n_body_joints]*(1+np.cos(phases[:10])) - amplitudes[parameters.n_body_joints:]*(1+np.cos(phases[10:]))
+    q = amplitudes[:parameters.n_body_joints]*(1+np.cos(phases[:parameters.n_body_joints])) - amplitudes[parameters.n_body_joints:2*parameters.n_body_joints]*(1+np.cos(phases[parameters.n_body_joints:2*parameters.n_body_joints]))
     
-    return np.zeros_like(phases) + np.zeros_like(amplitudes)
-
+    #q2=amplitudes[parameters.n_body_joints*2:]*(3+np.cos(phases[2*parameters.n_body_joints:]))
+    q2=1.5*(1+np.cos(phases[2*parameters.n_body_joints:]))
+    q=np.concatenate((np.array(q), np.array(q2)), axis=None)
+    
+    return (q)
 
 class ODESolver(object):
     """ODE solver with step integration"""
