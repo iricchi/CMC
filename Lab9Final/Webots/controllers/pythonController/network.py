@@ -40,7 +40,8 @@ def motor_output(phases, amplitudes,parameters):
     q = amplitudes[:parameters.n_body_joints]*(1+np.cos(phases[:parameters.n_body_joints])) - amplitudes[parameters.n_body_joints:2*parameters.n_body_joints]*(1+np.cos(phases[parameters.n_body_joints:2*parameters.n_body_joints]))
     
     #q2=amplitudes[parameters.n_body_joints*2:]*(3+np.cos(phases[2*parameters.n_body_joints:]))
-    q2=1.5*(1+np.cos(phases[2*parameters.n_body_joints:]))
+    #q2=1.5*(1+np.cos(phases[2*parameters.n_body_joints:]))
+    q2=np.pi/2-phases[2*parameters.n_body_joints:]
     q=np.concatenate((np.array(q), np.array(q2)), axis=None)
     
     return (q)

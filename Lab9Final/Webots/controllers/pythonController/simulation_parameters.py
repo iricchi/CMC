@@ -16,7 +16,8 @@ class SimulationParameters(dict):
         self.simulation_duration = 60
         self.phase_lag = 2/3*np.pi/10
         self.amplitude_gradient = None
-        self.amplitude_value = 0.3
+        self.amplitude_value = 0.15
+        self.amplitude = 0
         self.amplitude_leg_nominal=np.pi/2
         
         self.coupling_weights = np.zeros((self.n_oscillators,self.n_oscillators))
@@ -85,12 +86,8 @@ class SimulationParameters(dict):
             nominal_amplitude[0] = self.amplitude_value
             for i in range(1,self.n_body_joints):
                 nominal_amplitude[i] = nominal_amplitude[i-1]+ self.amplitude_gradient
-             
             nominal_amplitudes = np.concatenate((nominal_amplitude,nominal_amplitude), axis=None)
-            
             self.nominal_amplitudes=np.concatenate((nominal_amplitudes,np.ones(4)*self.amplitude_leg_nominal), axis=None)
-            
-            
             
         self.amplitude_rate = np.ones((self.n_oscillators,1))*10
         # Feel free to add more parameters (ex: MLR drive)

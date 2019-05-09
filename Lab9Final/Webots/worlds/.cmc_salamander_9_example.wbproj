@@ -8,5 +8,5 @@ projectionMode: ORTHOGRAPHIC
 renderingMode: PLAIN
 selectionDisabled: 0
 viewpointLocked: 0
-orthographicViewHeight: 9.59234
+orthographicViewHeight: 12.4797
 textFiles: 2 "controllers/pythonController/simulation_parameters.py" "controllers/pythonController/network.py" "controllers/pythonController/run_simulation.py"
