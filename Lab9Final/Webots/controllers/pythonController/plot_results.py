@@ -7,6 +7,7 @@ from matplotlib.colors import LogNorm
 from cmc_robot import ExperimentLogger
 from save_figures import save_figures
 from parse_args import save_plots
+import scipy.integrate as integrate
 
 
 def plot_positions(times, link_data):
@@ -76,18 +77,35 @@ def plot_2d(results, labels, n_data=300, log=False, cmap=None):
 def main(plot=True):
     """Main"""
     # Load data
-    with np.load('logs/example/simulation_1.npz') as data:
+    with np.load('logs/example/simulation_0.npz') as data:
         timestep = float(data["timestep"])
         amplitude = data["amplitude"]
         phase_lag = data["phase_lag"]
         link_data = data["links"][:, 0, :]
         joints_data = data["joints"]
-    times = np.arange(0, timestep*np.shape(link_data)[0], timestep)
+        
 
+    times = np.arange(0, timestep*np.shape(link_data)[0], timestep)
+    
+    
     # Plot data
     plt.figure("Positions")
     plot_positions(times, link_data)
-
+    
+    
+    # Plot energy
+    velocity = joints_data[:,:,1]
+    torque = joints_data[:,:,3]
+    power = velocity*torque
+    energy = np.zeros(power.shape[1])
+    for i in range(power.shape[1]):
+        y = power[:,i]
+        energy[i] = integrate.trapz(y,times)
+        
+            
+    plt.figure("Energy") 
+    plt.plot(energy)
+    
     # Show plots
     if plot:
         plt.show()
