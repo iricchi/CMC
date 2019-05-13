@@ -19,6 +19,8 @@ class SimulationParameters(dict):
         self.amplitude_value = 0.15
         self.amplitude = 0
         self.amplitude_leg_nominal=np.pi/2
+        self.turn=0
+        self.backward=False
         
         self.coupling_weights = np.zeros((self.n_oscillators,self.n_oscillators))
         self.freqs = (np.ones((self.n_oscillators,1))*2)[:,0] #2Hz
@@ -74,7 +76,8 @@ class SimulationParameters(dict):
         self.phase_bias[21,23]=np.pi  
         self.phase_bias[23,21]=np.pi
         
-       
+        if(backward):
+            self.phase_bias=self.phase_bias.T
         
         if self.amplitude_gradient == None:
             nominal_amplitude = np.ones(self.n_body_joints*2) * self.amplitude_value

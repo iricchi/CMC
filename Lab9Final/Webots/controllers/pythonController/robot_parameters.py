@@ -21,6 +21,8 @@ class RobotParameters(dict):
         self.n_oscillators_legs = self.n_legs_joints
         self.n_oscillators = self.n_oscillators_body + self.n_oscillators_legs
         self.freqs = np.zeros(self.n_oscillators)
+        self.turn=parameters.turn
+        self.backward=parameters.backward
         self.coupling_weights = np.zeros([
             self.n_oscillators,
             self.n_oscillators

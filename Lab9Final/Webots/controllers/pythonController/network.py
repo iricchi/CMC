@@ -1,7 +1,7 @@
 """Oscillator network ODE"""
 
 import numpy as np
-
+from simulation_parameters import SimulationParameters
 from solvers import euler, rk4
 from robot_parameters import RobotParameters
 
@@ -13,15 +13,18 @@ def network_ode(_time, state, parameters):
 
     """
     phases = np.array(state[:parameters.n_oscillators])
-    amplitudes = np.array(state[parameters.n_oscillators:2*parameters.n_oscillators])
-    
+    if parameters.turn==0:
+        amplitudes = np.array(state[parameters.n_oscillators:2*parameters.n_oscillators])
+    else:
+        amplitudes = np.array(state[parameters.n_oscillators:2*parameters.n_oscillators])
+        amplitudes[0:10] = (1-parameters.turn)*amplitudes[:10]
+        amplitudes[10:20]= (1+parameters.turn)*amplitudes[10:20]
+        
     dphase = np.zeros(parameters.n_oscillators)
     sum = 0
     for i in range(parameters.n_oscillators):
         for j in range(parameters.n_oscillators):
-        #Amplitude?????
             sum += parameters.coupling_weights[i,j]*amplitudes[i]*np.sin(phases[j]-phases[i]-parameters.phase_bias[i,j])
-
         dphase[i]=2*np.pi*parameters.freqs[i]+sum
   
    
@@ -37,7 +40,9 @@ def network_ode(_time, state, parameters):
 
 def motor_output(phases, amplitudes,parameters):
     """Motor output"""
+    
     q = amplitudes[:parameters.n_body_joints]*(1+np.cos(phases[:parameters.n_body_joints])) - amplitudes[parameters.n_body_joints:2*parameters.n_body_joints]*(1+np.cos(phases[parameters.n_body_joints:2*parameters.n_body_joints]))
+    
     
     #q2=amplitudes[parameters.n_body_joints*2:]*(3+np.cos(phases[2*parameters.n_body_joints:]))
     #q2=1.5*(1+np.cos(phases[2*parameters.n_body_joints:]))

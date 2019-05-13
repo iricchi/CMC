@@ -1,6 +1,9 @@
 """Plot results"""
 
 import numpy as np
+from mpl_toolkits.mplot3d import Axes3D
+from matplotlib import cm
+from matplotlib.ticker import LinearLocator, FormatStrFormatter
 from scipy.interpolate import griddata
 import matplotlib.pyplot as plt
 from matplotlib.colors import LogNorm
@@ -27,6 +30,34 @@ def plot_trajectory(link_data):
     plt.ylabel("z [m]")
     plt.axis("equal")
     plt.grid(True)
+    
+def compute_energy(joints_data, times):
+    velocity = joints_data[:,:,1]
+    torque = joints_data[:,:,3]
+    power = velocity*torque
+    energy = np.zeros(power.shape[1])
+    for i in range(power.shape[1]):
+        y = np.absolute(power[:,i])
+        energy[i] = integrate.trapz(y,times) 
+    return(sum(energy))
+
+def compute_velocity(times, link_data):
+    vitesse=(link_data[-1]-link_data[int(len(link_data)/2)])/(times[-1]-times[int(len(times)/2)])
+    return (np.linalg.norm(vitesse))
+
+def plot_energy(listamplitude, listphaselag, energymat):
+    fig = plt.figure()
+    ax = fig.gca(projection='3d')
+    X, Y = np.meshgrid(listamplitude, listphaselag)
+    surf = ax.plot_surface(X, Y, energymat.T, cmap=cm.coolwarm,linewidth=0, antialiased=False)
+    fig.colorbar(surf, shrink=0.5, aspect=5)
+    
+def plot_vitesse(listamplitude, listphaselag, vitessemat):
+    fig = plt.figure()
+    ax = fig.gca(projection='3d')
+    X, Y = np.meshgrid(listamplitude, listphaselag)
+    surf = ax.plot_surface(X, Y, vitessemat.T, cmap=cm.coolwarm,linewidth=0, antialiased=False)
+    fig.colorbar(surf, shrink=0.5, aspect=5)    
 
 
 def plot_2d(results, labels, n_data=300, log=False, cmap=None):
@@ -74,45 +105,53 @@ def plot_2d(results, labels, n_data=300, log=False, cmap=None):
     cbar.set_label(labels[2])
 
 
-def main(plot=True):
+def main(nbsimu, listamplitude, listphaselag, plot=True):
     """Main"""
-    # Load data
-    with np.load('logs/example/simulation_0.npz') as data:
-        timestep = float(data["timestep"])
-        amplitude = data["amplitude"]
-        phase_lag = data["phase_lag"]
-        link_data = data["links"][:, 0, :]
-        joints_data = data["joints"]
+    
+    energymat=np.zeros((listamplitude.size, listphaselag.size))
+    vitessemat=np.zeros((listamplitude.size, listphaselag.size))
+    
+    for i in range(nbsimu):
+        indexamplitude=int(i//listphaselag.size)
+        indexphaselag=int(i%listphaselag.size)
         
-
-    times = np.arange(0, timestep*np.shape(link_data)[0], timestep)
-    
-    
-    # Plot data
-    plt.figure("Positions")
-    plot_positions(times, link_data)
-    
-    
-    # Plot energy
-    velocity = joints_data[:,:,1]
-    torque = joints_data[:,:,3]
-    power = velocity*torque
-    energy = np.zeros(power.shape[1])
-    for i in range(power.shape[1]):
-        y = power[:,i]
-        energy[i] = integrate.trapz(y,times)
+        # Load data
+        with np.load('logs/9b/simulation_'+str(i)+'.npz') as data:
+            timestep = float(data["timestep"])
+            amplitude = data["amplitude"]
+            phase_lag = data["phase_lag"]
+            link_data = data["links"][:, 0, :]
+            joints_data = data["joints"]
+        times = np.arange(0, timestep*np.shape(link_data)[0], timestep)
         
-            
-    plt.figure("Energy") 
-    plt.plot(energy)
+        energymat[indexamplitude, indexphaselag]=compute_energy(joints_data, times)
+        vitessemat[indexamplitude, indexphaselag]=compute_velocity(times, link_data)
+        
+        print(compute_velocity(times, link_data))
     
-    # Show plots
+        # Plot data
+        plt.figure("Positions")
+        plot_positions(times, link_data)
+        
+        plt.figure("Trajectory")
+        plot_trajectory(link_data)
+    
+        
+        # Plot energy
+    plt.figure('Energy')
+    plot_energy( listamplitude, listphaselag, energymat)
+    
+    plt.figure('Vitesse')
+    plot_vitesse( listamplitude, listphaselag, vitessemat)
+    
+        # Show plots
     if plot:
         plt.show()
+        
     else:
         save_figures()
 
 
-if __name__ == '__main__':
-    main(plot=not save_plots())
+    if __name__ == '__main__':
+        main(plot=not save_plots())
 
