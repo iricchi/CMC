@@ -12,16 +12,13 @@ def exercise_example(world, timestep, reset):
     parameter_set = [
         SimulationParameters(
             simulation_duration=10,
-            drive=drive,
-            amplitudes=[1, 2, 3],
-            phase_lag=np.zeros(n_joints),
-            turn=0,
-            # ...
+            drive_mlr=drive,
+            amplitude_value=0.5,
+            
+            turn=0
+            
         )
-        for drive in np.linspace(1, 2, 2)
-        # for amplitudes in ...
-        # for ...
-    ]
+        for drive in np.linspace(3, 4, 2)]
 
     # Grid search
     for simulation_i, parameters in enumerate(parameter_set):

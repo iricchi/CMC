@@ -16,13 +16,16 @@ def run_network(duration, update=False, drive=0):
     timestep = 5e-3
     times = np.arange(0, duration, timestep)
     n_iterations = len(times)
-    parameters = SimulationParameters(
-        drive=drive,
-        amplitude_gradient=None,
-        phase_lag=None,
-        turn=None,
-    )
-    network = SalamanderNetwork(timestep, parameters)
+
+
+    
+    parameter_set = SimulationParameters(
+            simulation_duration=100,
+            drive_mlr=2.5,
+            phase_lag=2*np.pi/10,
+        )
+        
+    network = SalamanderNetwork(timestep, parameter_set)
     osc_left = np.arange(10)
     osc_right = np.arange(10, 20)
     osc_legs = np.arange(20, 24)
@@ -55,6 +58,7 @@ def run_network(duration, update=False, drive=0):
         if update:
             network.parameters.update(
                 SimulationParameters(
+                    drive_mlr=2
                     # amplitude_gradient=None,
                     # phase_lag=None
                 )
@@ -74,8 +78,14 @@ def run_network(duration, update=False, drive=0):
 
     # Implement plots of network results
     pylog.warning("Implement plots")
-    plot_results.main(plot=True)
-
+    #plot_results.main(plot=True)
+    #plt.plot(phases_log)
+    plt.close('all')
+    plt.figure('a')
+    plt.plot(outputs_log)
+    plt.figure('b')
+    plt.plot(amplitudes_log)
+    
 def main(plot):
     """Main"""
 

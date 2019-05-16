@@ -16,12 +16,12 @@ import scipy.integrate as integrate
 def plot_positions(times, link_data):
     """Plot positions"""
     for i, data in enumerate(link_data.T):
-        plt.plot(times, data, label=["x", "y", "z"][i])
+        if i==0:
+            plt.plot(times, data, label=["x", "y", "z"][i])
     plt.legend()
     plt.xlabel("Time [s]")
     plt.ylabel("Distance [m]")
     plt.grid(True)
-
 
 def plot_trajectory(link_data):
     """Plot positions"""
@@ -31,6 +31,53 @@ def plot_trajectory(link_data):
     plt.axis("equal")
     plt.grid(True)
     
+
+def plot_spine_angle(times,link_data):
+    plt.figure('Spine angle')
+    for i in range(10):
+        plt.plot(times,link_data[:,i,0]+i*0.3)
+    plt.title('Spine angles')
+    plt.xlabel('time[s]')
+    plt.ylabel('angle')
+    
+    plt.figure('Spine angle legs')
+    for i in range(4):
+        plt.plot(times,link_data[:,10+i,0]+i*0.3)
+    plt.title('Spine angles legs')
+    plt.xlabel('time[s]')
+    plt.ylabel('angle')
+    
+  
+
+ 
+ 
+def plot_energy(listamplitude, listphaselag, energymat):
+    fig = plt.figure()
+    ax = fig.gca(projection='3d')
+    X, Y = np.meshgrid(listamplitude, listphaselag)
+    surf = ax.plot_surface(X, Y, energymat.T, cmap=cm.coolwarm,linewidth=0, antialiased=False)
+    fig.colorbar(surf, shrink=0.5, aspect=5)
+    ax.set_xlabel('Phase offset')
+    ax.set_ylabel('Amplitude')
+    ax.set_zlabel('Energy')
+    
+    
+    
+def plot_vitesse(listamplitude, listphaselag, vitessemat):
+    fig = plt.figure()
+    #ax=plt.axes(projection='3d')
+    #ax.plot_trisurf(listamplitude, listphaselag,vitessemat, cmap='viridis', edgecolor='none')
+    
+    
+    ax = fig.gca(projection='3d')
+    X, Y = np.meshgrid(listamplitude, listphaselag)
+    surf = ax.plot_surface(X, Y, vitessemat.T, cmap=cm.coolwarm,linewidth=0, antialiased=False)
+    fig.colorbar(surf, shrink=0.5, aspect=5)
+    ax.set_xlabel('Phase offset')
+    ax.set_ylabel('Amplitude')
+    ax.set_zlabel('Velocity')     
+ 
+ 
 def compute_energy(joints_data, times):
     velocity = joints_data[:,:,1]
     torque = joints_data[:,:,3]
@@ -45,19 +92,7 @@ def compute_velocity(times, link_data):
     vitesse=(link_data[-1]-link_data[int(len(link_data)/2)])/(times[-1]-times[int(len(times)/2)])
     return (np.linalg.norm(vitesse))
 
-def plot_energy(listamplitude, listphaselag, energymat):
-    fig = plt.figure()
-    ax = fig.gca(projection='3d')
-    X, Y = np.meshgrid(listamplitude, listphaselag)
-    surf = ax.plot_surface(X, Y, energymat.T, cmap=cm.coolwarm,linewidth=0, antialiased=False)
-    fig.colorbar(surf, shrink=0.5, aspect=5)
-    
-def plot_vitesse(listamplitude, listphaselag, vitessemat):
-    fig = plt.figure()
-    ax = fig.gca(projection='3d')
-    X, Y = np.meshgrid(listamplitude, listphaselag)
-    surf = ax.plot_surface(X, Y, vitessemat.T, cmap=cm.coolwarm,linewidth=0, antialiased=False)
-    fig.colorbar(surf, shrink=0.5, aspect=5)    
+
 
 
 def plot_2d(results, labels, n_data=300, log=False, cmap=None):
@@ -116,41 +151,42 @@ def main(nbsimu, listamplitude, listphaselag, plot=True):
         indexphaselag=int(i%listphaselag.size)
         
         # Load data
-        with np.load('logs/9b/simulation_'+str(i)+'.npz') as data:
-            timestep = float(data["timestep"])
-            amplitude = data["amplitude"]
-            phase_lag = data["phase_lag"]
-            link_data = data["links"][:, 0, :]
-            joints_data = data["joints"]
-        times = np.arange(0, timestep*np.shape(link_data)[0], timestep)
+    with np.load('logs/9b/simulation_0.npz') as data:
+        timestep = float(data["timestep"])
+        amplitude = data["amplitude_value"]
+        phase_lag = data["phase_lag"]
+        link_data = data["links"][:, 0, :]
+        joints_data = data["joints"]
         
-        energymat[indexamplitude, indexphaselag]=compute_energy(joints_data, times)
-        vitessemat[indexamplitude, indexphaselag]=compute_velocity(times, link_data)
+    times = np.arange(0, timestep*np.shape(link_data)[0], timestep)
         
-        print(compute_velocity(times, link_data))
+    energymat[indexamplitude, indexphaselag]=compute_energy(joints_data, times)
+    vitessemat[indexamplitude, indexphaselag]=compute_velocity(times, link_data)
+        
+    #print(compute_velocity(times, link_data))
     
-        # Plot data
-        plt.figure("Positions")
-        plot_positions(times, link_data)
+    # Plot data
+    plt.figure("Positions")
+    plot_positions(times, link_data)
         
-        plt.figure("Trajectory")
-        plot_trajectory(link_data)
+    plt.figure("Trajectory")
+    plot_trajectory(link_data)
     
         
-        # Plot energy
+    # Plot energy
     plt.figure('Energy')
     plot_energy( listamplitude, listphaselag, energymat)
     
+    #Plot vitesse
     plt.figure('Vitesse')
     plot_vitesse( listamplitude, listphaselag, vitessemat)
     
-        # Show plots
+    plot_spine_angle(times,joints_data)
+    # Show plots
     if plot:
         plt.show()
-        
     else:
         save_figures()
-
 
     if __name__ == '__main__':
         main(plot=not save_plots())

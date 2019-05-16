@@ -3,7 +3,8 @@
 import numpy as np
 from network import SalamanderNetwork
 from experiment_logger import ExperimentLogger
-
+from simulation_parameters import SimulationParameters
+import computedrive
 
 class SalamanderCMC(object):
     """Salamander robot for CMC"""
@@ -21,6 +22,9 @@ class SalamanderCMC(object):
         self.position_sensors = [
             self.robot.getPositionSensor('position_sensor_{}'.format(i+1))
             for i in range(self.N_BODY_JOINTS)
+        ] + [
+            self.robot.getPositionSensor('position_sensor_leg_{}'.format(i+1))
+            for i in range(self.N_LEGS)
         ]
         for sensor in self.position_sensors:
             sensor.enable(timestep)
@@ -46,6 +50,8 @@ class SalamanderCMC(object):
             motor.enableTorqueFeedback(timestep)
         for motor in self.motors_legs:
             motor.setPosition(-np.pi/2)
+            motor.enableForceFeedback(timestep)
+            motor.enableTorqueFeedback(timestep)
 
         # Iteration counter
         self.iteration = 0
@@ -54,7 +60,7 @@ class SalamanderCMC(object):
         self.log = ExperimentLogger(
             n_iterations,
             n_links=1,
-            n_joints=self.N_BODY_JOINTS,
+            n_joints=self.N_BODY_JOINTS+self.N_LEGS,
             filename=logs,
             timestep=1e-3*timestep,
             **parameters
@@ -68,11 +74,6 @@ class SalamanderCMC(object):
             self.log.log_joint_position(
                 self.iteration, i,
                 self.position_sensors[i].getValue()
-            )
-            # Velocity
-            self.log.log_joint_velocity(
-                self.iteration, i,
-                motor.getVelocity()
             )
             # Command
             self.log.log_joint_cmd(
@@ -89,13 +90,92 @@ class SalamanderCMC(object):
                 self.iteration, i,
                 motor.getTorqueFeedback()
             )
+        for i, motor in enumerate(self.motors_legs):
+            # Position
+            self.log.log_joint_position(
+                self.iteration, 10+i,
+                self.position_sensors[10+i].getValue()
+            )
+            # Command
+            self.log.log_joint_cmd(
+                self.iteration, 10+i,
+                motor.getTargetPosition()
+            )
+            # Torque
+            self.log.log_joint_torque(
+                self.iteration, 10+i,
+                motor.getTorqueFeedback()
+            )
+            # Torque feedback
+            self.log.log_joint_torque_feedback(
+                self.iteration, 10+i,
+                motor.getTorqueFeedback()
+            )
 
     def step(self):
         """Step"""
         # Increment iteration
         self.iteration += 1
-
+        print(self.gps.getValues()[0])   
+        
+        if self.gps.getValues()[0]>0.15:
+            #driveancien=self.network.parameters.drive_mlr
+            #drive=1.5+3*self.gps.getValues()[0]
+            #if driveancien>drive:
+            #    drive=driveancien
+            #if drive>4:
+            drive=3.5
+            freqamp=computedrive.computefreqamp(drive, False)
+            
+            self.network.parameters.freqs=freqamp[0]
+            self.network.parameters.nominal_amplitudes=freqamp[1]
+            
+            self.network.parameters.set_frequencies(self.network.parameters)
+            self.network.parameters.set_nominal_amplitudes(self.network.parameters)
+            
+            
+            
+            #frequency = (np.ones((self.network.parameters.n_oscillators,1))*vfreq)[:,0] #2Hz
+            
+            #self.network.parameters.freqs = np.ones(self.network.parameters.n_oscillators)*frequency
+            
+            #nominal_amplitude = np.ones(self.network.parameters.n_body_joints*2) *amplitude_value
+            #self.network.parameters.nominal_amplitude = np.concatenate((nominal_amplitude, np.zeros(4)), axis=None)
+            
+            #self.network.parameters.set_frequencies(self.network.parameters)
+            #self.network.parameters.set_nominal_amplitudes(self.network.parameters)
+        
+        #elif self.gps.getValues()[0]<0.4:
+            #drive=1
+            #freqamp=computedrive.computefreqamp(drive, False)
+            
+            
+            #self.network.parameters.freqs=freqamp[0]
+            
+            #self.network.parameters.nominal_amplitudes=freqamp[1]
+            
+            #self.network.parameters.set_frequencies(self.network.parameters)
+            #self.network.parameters.set_nominal_amplitudes(self.network.parameters)
+            
+            
+            #self.network.parameters.update(self.network.parameters)
+            
+            #drive=1
+            #amplitude_value=0.15+(0.25/4)*(drive-1)
+            #vfreq=1+(0.5)*(drive-1)
+           
+            #frequency = (np.ones((self.network.parameters.n_oscillators,1))*vfreq)[:,0] #2Hz
+            
+            #self.network.parameters.freqs = np.ones(self.network.parameters.n_oscillators)*frequency
+            
+            #nominal_amplitude = np.ones(self.network.parameters.n_body_joints*2) *amplitude_value
+            #self.network.parameters.nominal_amplitude = np.concatenate((nominal_amplitude, np.ones(4)*self.network.parameters.amplitude_leg_nominal), axis=None)
+            
+            
+            
+        
         # Update network
+        
         self.network.step()
         positions = self.network.get_motor_position_output()
 

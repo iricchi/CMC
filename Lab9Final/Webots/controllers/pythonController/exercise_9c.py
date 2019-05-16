@@ -11,8 +11,8 @@ def exercise_9c(world, timestep, reset):
     # Parameters
     n_joints = 10
     listuple=[]
-    Rtail=np.linspace(0.1, 0.5, 7)
-    Rhead=np.linspace(0.1,0.5, 7)
+    Rtail=np.linspace(0.1, 0.5, 6)
+    Rhead=np.linspace(0.1,0.5, 6)
     for i in range(Rtail.size):
         for j in range(len(Rhead)):
             listuple.append((Rtail[i], Rhead[j]))
@@ -20,13 +20,12 @@ def exercise_9c(world, timestep, reset):
     nbsimu=Rhead.size*Rtail.size
     
     parameter_set = [SimulationParameters(
-            simulation_duration=5,
+            simulation_duration=12,
             #drive=drive,
             amplitude_gradient=(grad[1]-grad[0])/10,
-            amplitude=0.4,
-            phase_lag=2/3*np.pi/10,
-            #
-            turn=0,
+            amplitude=0.3,
+            phase_lag=2*np.pi/10,
+            
             # ...
         )for grad in listuple]
 

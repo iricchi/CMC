@@ -29,8 +29,8 @@ WorldInfo {
   ]
 }
 Viewpoint {
-  orientation -0.07452602537686746 -0.9441057347742078 -0.32110782162379636 2.6783448
-  position -4.894217006582212 6.395222703415678 -6.979515949711041
+  orientation -0.5725518028412436 -0.6098701025162 -0.5479442408859879 1.9881629513015064
+  position -1.600343821426077 5.295725567539971 0.11088529276160426
   follow "salamander"
 }
 Background {
@@ -47,8 +47,8 @@ DirectionalLight {
   direction 1 -0.5 -1
 }
 DEF SALAMANDER Robot {
-  translation -1 0.29422 0
-  rotation 0 1 0 -1.5707
+  translation -1.5 0.29422 0
+  rotation 0 1 0 -1.5707996938995747
   children [
     GPS {
     }
