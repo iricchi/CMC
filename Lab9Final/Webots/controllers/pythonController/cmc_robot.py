@@ -116,20 +116,13 @@ class SalamanderCMC(object):
         """Step"""
         # Increment iteration
         self.iteration += 1
-        print(self.gps.getValues()[0])   
+        #print(self.gps.getValues()[0])   
         
-        if self.gps.getValues()[0]>0.15:
-            #driveancien=self.network.parameters.drive_mlr
-            #drive=1.5+3*self.gps.getValues()[0]
-            #if driveancien>drive:
-            #    drive=driveancien
-            #if drive>4:
-            drive=3.5
-            freqamp=computedrive.computefreqamp(drive, False)
-            
+        if self.gps.getValues()[0]>0.:
+            self.network.parameters.drive_mlr=3.5
+            freqamp=computedrive.computefreqamp(self.network.parameters.drive_mlr, False)
             self.network.parameters.freqs=freqamp[0]
             self.network.parameters.nominal_amplitudes=freqamp[1]
-            
             self.network.parameters.set_frequencies(self.network.parameters)
             self.network.parameters.set_nominal_amplitudes(self.network.parameters)
             

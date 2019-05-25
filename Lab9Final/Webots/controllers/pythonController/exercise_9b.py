@@ -9,8 +9,8 @@ def exercise_9b(world, timestep, reset):
     """Exercise example"""
     # Parameters
     n_joints = 10
-    listamplitude=np.linspace(0.1,0.4, 3)
-    listphaselag=np.linspace(0.15, 0.9, 2)
+    listamplitude=np.linspace(0.05,0.4, 4)
+    listphaselag=np.linspace(0., 0.9, 6)
     listuple=[]
     
     for i in range(len(listamplitude)):
@@ -20,8 +20,10 @@ def exercise_9b(world, timestep, reset):
     nbsimu=len(listamplitude)* len(listphaselag)
     
     parameter_set = [SimulationParameters(
-        simulation_duration=1, 
-        amplitude_value=amp,phase_lag=phasel, drive=None)
+        simulation_duration=15, 
+        amplitude_body_value=amp,
+        phase_lag=phasel, 
+        drive_mlr=None)
         for amp, phasel in listuple]
 
     # Grid search

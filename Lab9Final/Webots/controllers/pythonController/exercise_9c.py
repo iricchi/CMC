@@ -11,8 +11,9 @@ def exercise_9c(world, timestep, reset):
     # Parameters
     n_joints = 10
     listuple=[]
-    Rtail=np.linspace(0.1, 0.5, 6)
-    Rhead=np.linspace(0.1,0.5, 6)
+    Rtail=np.linspace(0.1, 0.4, 2)
+    Rhead=np.linspace(0.1,0.4, 4)
+    
     for i in range(Rtail.size):
         for j in range(len(Rhead)):
             listuple.append((Rtail[i], Rhead[j]))
@@ -20,13 +21,11 @@ def exercise_9c(world, timestep, reset):
     nbsimu=Rhead.size*Rtail.size
     
     parameter_set = [SimulationParameters(
-            simulation_duration=12,
+            simulation_duration=1,
             #drive=drive,
-            amplitude_gradient=(grad[1]-grad[0])/10,
-            amplitude=0.3,
-            phase_lag=2*np.pi/10,
-            
-            # ...
+            amplitude_gradient=-(grad[1]-grad[0])/10,
+            amplitude_body_value=grad[1],
+            phase_lag=2*np.pi/10
         )for grad in listuple]
 
     # Grid search
@@ -39,7 +38,7 @@ def exercise_9c(world, timestep, reset):
             parameters,
             timestep,
             int(1000*parameters.simulation_duration/timestep),
-            logs="./logs/9b/simulation_{}.npz".format(simulation_i)     
+            logs="./logs/9c/simulation_{}.npz".format(simulation_i)     
         )
     plot_results.main(nbsimu,Rtail, Rhead, plot=True)
 

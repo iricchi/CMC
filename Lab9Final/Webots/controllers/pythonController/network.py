@@ -31,13 +31,16 @@ def network_ode(_time, state, parameters):
     
     damplitude = parameters.rates*((parameters.nominal_amplitudes-amplitudes))
     return np.concatenate((dphase, damplitude), axis=None)
+    
+    #a changer avec equations du cours
 
 
 def motor_output(phases, amplitudes,parameters):
     """Motor output"""
     q = amplitudes[:parameters.n_body_joints]*(1+np.cos(phases[:parameters.n_body_joints])) - amplitudes[parameters.n_body_joints:2*parameters.n_body_joints]*(1+np.cos(phases[parameters.n_body_joints:2*parameters.n_body_joints]))
     #print(phases[2*parameters.n_body_joints:])
-    q2=-amplitudes[2*parameters.n_body_joints:]*phases[2*parameters.n_body_joints:]
+    q2=amplitudes[2*parameters.n_body_joints:]*(1+np.cos(phases[2*parameters.n_body_joints:]))
+    
     q=np.concatenate((np.array(q), np.array(q2)), axis=None)
     return (q)
 

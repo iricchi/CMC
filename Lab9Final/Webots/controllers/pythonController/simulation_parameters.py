@@ -21,7 +21,7 @@ class SimulationParameters(dict):
         self.phase_lag = 2/3*np.pi/10
         self.freqvaluebody=1
         self.freqvaluelimb=0
-        self.amplitude_body_value = 0.3
+        self.amplitude_body_value = 0.
         self.amplitude_leg_value=0.
         
         self.drive_mlr = None
@@ -120,8 +120,8 @@ class SimulationParameters(dict):
         self.coupling_weights=self.coupling_weights.T
         
         #Plot of the matrix
-        plt.matshow(self.coupling_weights)
-        plt.show
+        #plt.matshow(self.coupling_weights)
+        #plt.show
         
         #DEFINITION OF THE PHASE BIAS MATRIX
         self.phase_bias = np.zeros((self.n_oscillators,self.n_oscillators))
@@ -156,8 +156,8 @@ class SimulationParameters(dict):
         self.phase_bias[23,15:20]=self.phaseoffset
         
         #plot of the matrix
-        plt.matshow(self.phase_bias)
-        plt.show
+        #plt.matshow(self.phase_bias)
+        #plt.show
         
         #To go backward
         if(self.backward):
@@ -171,7 +171,7 @@ class SimulationParameters(dict):
         else:
             #creating one half of the amplitude vector
             nominal_amplitude_left = np.zeros(self.n_body_joints)
-            nominal_amplitude_left[0] = self.amplitude_value
+            nominal_amplitude_left[0] = self.amplitude_body_value
             for i in range(1,self.n_body_joints):
                 nominal_amplitude_left[i] = nominal_amplitude_left[i-1]+ self.amplitude_gradient
             #concatenate with itself to have all the limbs

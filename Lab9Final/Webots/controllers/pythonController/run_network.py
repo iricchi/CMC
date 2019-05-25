@@ -16,8 +16,6 @@ def run_network(duration, update=False, drive=0):
     timestep = 5e-3
     times = np.arange(0, duration, timestep)
     n_iterations = len(times)
-
-
     
     parameter_set = SimulationParameters(
             simulation_duration=100,

@@ -12,8 +12,8 @@ def exercise_9f(world, timestep, reset):
     n_joints = 10
     
     
-    Phase_offset=np.linspace(0.,0., 1)
-    amp=np.linspace(0.3, 0.3, 1)
+    Phase_offset=np.linspace(-3,3, 10)
+    amp=np.linspace(0.3, 0.3, 2)
     nbsimu=Phase_offset.size*amp.size
     
     listuple=[]
@@ -26,7 +26,7 @@ def exercise_9f(world, timestep, reset):
     
     parameter_set = [SimulationParameters(
             simulation_duration=15,
-            drive_mlr=2.5,
+            drive_mlr=1,
             phaseoffset=phaseof,
             amplitude_value=ampli,
             phase_lag=2*np.pi/10,
